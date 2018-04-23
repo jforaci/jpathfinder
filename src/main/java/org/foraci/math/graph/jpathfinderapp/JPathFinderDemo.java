@@ -7,10 +7,6 @@ public class JPathFinderDemo
 	public static void main(String[] args)
 	{
 		/*
-		 * SortedLinkedList list = new SortedLinkedList(); int num; for(int i=0;
-		 * i <2000; i++) { num=(int)(10000*Math.random()); list.add(new
-		 * Integer(num)); } System.out.println("\n"+list); for(int i=0; i <2000;
-		 * i++) { num=(int)(list.size()*Math.random()); list.remove(num); }
 		 * AStarPathFinder pathFinder = AStarPathFinder.BuildPathFinder( new
 		 * int[] {0,1,1,0, 0,0,1,0, 1,0,0,0, 1,0,0,1},4,4 );
 		 * pathFinder.computeBestPath(0,0,3,0, 4); LinkedList bestPath =

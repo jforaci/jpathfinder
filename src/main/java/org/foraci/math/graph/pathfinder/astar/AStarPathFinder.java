@@ -1,33 +1,30 @@
 package org.foraci.math.graph.pathfinder.astar;
 
-import java.util.LinkedList;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 import org.foraci.math.graph.pathfinder.NoPathFoundException;
 import org.foraci.math.graph.pathfinder.PathCostEstimator;
 import org.foraci.math.graph.pathfinder.PathFinder;
 import org.foraci.math.graph.pathfinder.PathNode;
-import org.foraci.math.graph.pathfinder.SortedLinkedList;
 
 public final class AStarPathFinder extends PathFinder
 {
-	private SortedLinkedList open;
-	private SortedLinkedList closed;
+	private PriorityQueue<AStarPathNode> open;
+	private PriorityQueue<AStarPathNode> closed;
 	private PathNode curDest;
-	private LinkedList bestPath;
+	private LinkedList<AStarPathNode> bestPath;
 	private PathCostEstimator successorCost;
 
 	/**
 	 * Constructs an instance of this path finder.
 	 */
-	protected AStarPathFinder(PathNode[] graph, PathCostEstimator pathCost,
+	private AStarPathFinder(PathNode[] graph, PathCostEstimator pathCost,
 		PathCostEstimator successorCost)
 	{
 		super(graph, pathCost);
 		this.successorCost = successorCost;
-		open = new SortedLinkedList();
-		closed = new SortedLinkedList();
+		open = new PriorityQueue<>();
+		closed = new PriorityQueue<>();
 		curDest = null;
 		bestPath = null;
 	}
@@ -93,38 +90,7 @@ public final class AStarPathFinder extends PathFinder
 						* cols + i]);
 				else
 					graph[j * cols + i] = null;
-		for (i = 0; i < cols; i++)
-			for (j = 0; j < rows; j++)
-			{
-				Vector v = new Vector();
-				if (arrGraph[j * cols + i] == Integer.MAX_VALUE)
-				{ //no node present here
-					continue;
-				}
-				if (arrGraphPad[(j + 1) * colsp + i] != Integer.MAX_VALUE) //left
-					v.add(graph[j * cols + (i - 1)]);
-				if (arrGraphPad[(j + 1) * colsp + (i + 2)] != Integer.MAX_VALUE) //right
-					v.add(graph[j * cols + (i + 1)]);
-				if (arrGraphPad[j * colsp + (i + 1)] != Integer.MAX_VALUE) //top
-					v.add(graph[(j - 1) * cols + i]);
-				if (arrGraphPad[(j + 2) * colsp + (i + 1)] != Integer.MAX_VALUE) //bot
-					v.add(graph[(j + 1) * cols + i]);
-				if (arrGraphPad[j * colsp + i] != Integer.MAX_VALUE) //top left
-					v.add(graph[(j - 1) * cols + (i - 1)]);
-				if (arrGraphPad[j * colsp + (i + 2)] != Integer.MAX_VALUE) //top
-																		   // right
-					v.add(graph[(j - 1) * cols + (i + 1)]);
-				if (arrGraphPad[(j + 2) * colsp + i] != Integer.MAX_VALUE) //bot
-																		   // left
-					v.add(graph[(j + 1) * cols + (i - 1)]);
-				if (arrGraphPad[(j + 2) * colsp + (i + 2)] != Integer.MAX_VALUE) //bot
-																				 // right
-					v.add(graph[(j + 1) * cols + (i + 1)]);
-				//create an array for neighbors and fill with vector contents
-				AStarPathNode[] arrNeigh = new AStarPathNode[v.size()];
-				v.toArray(arrNeigh);
-				graph[j * cols + i].setNeighbors(arrNeigh);
-			}
+		connectNeighbors(arrGraph, rows, cols, colsp, arrGraphPad, graph);
 		//create new pathfinder with default cost calculation functions
 		AStarPathFinder pathFinder = new AStarPathFinder(graph, pathCost,
 			successorCost);
@@ -195,42 +161,43 @@ public final class AStarPathFinder extends PathFinder
 				}
 				else
 					graph[j * cols + i] = null;
-		for (i = 0; i < cols; i++)
-			for (j = 0; j < rows; j++)
-			{
-				Vector v = new Vector();
-				if (arrGraph[j * cols + i] == Integer.MAX_VALUE)
-				{ //no node present here
-					continue;
-				}
-				if (arrGraphPad[(j + 1) * colsp + i] != Integer.MAX_VALUE) //left
-					v.add(graph[j * cols + (i - 1)]);
-				if (arrGraphPad[(j + 1) * colsp + (i + 2)] != Integer.MAX_VALUE) //right
-					v.add(graph[j * cols + (i + 1)]);
-				if (arrGraphPad[j * colsp + (i + 1)] != Integer.MAX_VALUE) //top
-					v.add(graph[(j - 1) * cols + i]);
-				if (arrGraphPad[(j + 2) * colsp + (i + 1)] != Integer.MAX_VALUE) //bot
-					v.add(graph[(j + 1) * cols + i]);
-				if (arrGraphPad[j * colsp + i] != Integer.MAX_VALUE) //top left
-					v.add(graph[(j - 1) * cols + (i - 1)]);
-				if (arrGraphPad[j * colsp + (i + 2)] != Integer.MAX_VALUE) //top
-																		   // right
-					v.add(graph[(j - 1) * cols + (i + 1)]);
-				if (arrGraphPad[(j + 2) * colsp + i] != Integer.MAX_VALUE) //bot
-																		   // left
-					v.add(graph[(j + 1) * cols + (i - 1)]);
-				if (arrGraphPad[(j + 2) * colsp + (i + 2)] != Integer.MAX_VALUE) //bot
-																				 // right
-					v.add(graph[(j + 1) * cols + (i + 1)]);
-				//create an array for neighbors and fill with vector contents
-				AStarPathNode[] arrNeigh = new AStarPathNode[v.size()];
-				v.toArray(arrNeigh);
-				graph[j * cols + i].setNeighbors(arrNeigh);
-			}
+		connectNeighbors(arrGraph, rows, cols, colsp, arrGraphPad, graph);
 		//create new pathfinder with cost calculation functions
 		AStarPathFinder pathFinder = new AStarPathFinder(graph, pathCost,
 			successorCost);
 		return pathFinder;
+	}
+
+	private static void connectNeighbors(int[] arrGraph, int rows, int cols, int colsp, int[] arrGraphPad, AStarPathNode[] graph) {
+		int i, j;
+		ArrayList<AStarPathNode> neighbors = new ArrayList<>(8); // max of 8 neighbors
+		for (i = 0; i < cols; i++)
+			for (j = 0; j < rows; j++) {
+				neighbors.clear();
+				if (arrGraph[j * cols + i] == Integer.MAX_VALUE) { //no node present here
+					continue;
+				}
+				if (arrGraphPad[(j + 1) * colsp + i] != Integer.MAX_VALUE) //left
+					neighbors.add(graph[j * cols + (i - 1)]);
+				if (arrGraphPad[(j + 1) * colsp + (i + 2)] != Integer.MAX_VALUE) //right
+					neighbors.add(graph[j * cols + (i + 1)]);
+				if (arrGraphPad[j * colsp + (i + 1)] != Integer.MAX_VALUE) //top
+					neighbors.add(graph[(j - 1) * cols + i]);
+				if (arrGraphPad[(j + 2) * colsp + (i + 1)] != Integer.MAX_VALUE) //bottom
+					neighbors.add(graph[(j + 1) * cols + i]);
+				if (arrGraphPad[j * colsp + i] != Integer.MAX_VALUE) //top left
+					neighbors.add(graph[(j - 1) * cols + (i - 1)]);
+				if (arrGraphPad[j * colsp + (i + 2)] != Integer.MAX_VALUE) //top right
+					neighbors.add(graph[(j - 1) * cols + (i + 1)]);
+				if (arrGraphPad[(j + 2) * colsp + i] != Integer.MAX_VALUE) //bottom left
+					neighbors.add(graph[(j + 1) * cols + (i - 1)]);
+				if (arrGraphPad[(j + 2) * colsp + (i + 2)] != Integer.MAX_VALUE) //bottom right
+					neighbors.add(graph[(j + 1) * cols + (i + 1)]);
+				//create an array for neighbors and fill with vector contents
+				AStarPathNode[] arrNeigh = new AStarPathNode[neighbors.size()];
+				neighbors.toArray(arrNeigh);
+				graph[j * cols + i].setNeighbors(arrNeigh);
+			}
 	}
 
 	/**
@@ -247,16 +214,16 @@ public final class AStarPathFinder extends PathFinder
 	{
 		PathNode pStart = null, pDest = null;
 
-		for (int i = 0; i < graph.length; i++)
-			if (graph[i] != null)
-			{
-				if (graph[i].id() == startId)
-					pStart = graph[i];
-				else if (graph[i].id() == destId)
-					pDest = graph[i];
+		for (PathNode pathNode : graph) {
+			if (pathNode != null) {
+				if (pathNode.id() == startId)
+					pStart = pathNode;
+				else if (pathNode.id() == destId)
+					pDest = pathNode;
 				if (pStart != null && pDest != null)
 					break;
 			}
+		}
 		return computeBestPath(pStart, pDest);
 	}
 
@@ -278,11 +245,10 @@ public final class AStarPathFinder extends PathFinder
 		bestPath = null;
 		if (pStart == null || pDest == null)
 			throw new NoPathFoundException();
-		open = new SortedLinkedList();
-		closed = new SortedLinkedList();
+		open = new PriorityQueue<>();
+		closed = new PriorityQueue<>();
 		AStarPathNode start = (AStarPathNode) pStart;
-		AStarPathNode dest = (AStarPathNode) pDest;
-		curDest = dest; //setup global ptr to destination path node
+		curDest = pDest; //setup global ptr to destination path node
 
 		int index;
 		int NumNeigh;
@@ -321,7 +287,7 @@ public final class AStarPathFinder extends PathFinder
 				// thus 'i' is index into succ[] array
 				index = i;
 				newCost = bestNode.g() + successorCost.cost(bestNode, succ);
-				if ((open.exists(succ)))
+				if ((open.contains(succ)))
 				{
 					bnSucc[index] = succ;
 					if (succ.g() > newCost)
@@ -331,7 +297,7 @@ public final class AStarPathFinder extends PathFinder
 						succ.setParent(bestNode);
 					}
 				}
-				else if ((closed.exists(succ)))
+				else if ((closed.contains(succ)))
 				{
 					bnSucc[index] = succ;
 					if (succ.g() > newCost)
@@ -352,7 +318,7 @@ public final class AStarPathFinder extends PathFinder
 					bnSucc[index] = succ;
 				}
 			}
-		} while (open.size() > 0);
+		} while (!open.isEmpty());
 		//no path can be found
 		throw new NoPathFoundException();
 	}
@@ -383,7 +349,7 @@ public final class AStarPathFinder extends PathFinder
 	private void downPropagate(AStarPathNode parent)
 	{
 		//stack for Depth-First traversal of parents' successors
-		Stack stack = new Stack();
+		Deque<AStarPathNode> stack = new ArrayDeque<>();
 		AStarPathNode succ;
 		int index;
 		float newCost;
@@ -407,9 +373,9 @@ public final class AStarPathFinder extends PathFinder
 			index++;
 		}
 		//
-		while (!stack.empty())
+		while (!stack.isEmpty())
 		{
-			parent = (AStarPathNode) stack.pop();
+			parent = stack.pop();
 			pSuccessors = parent.getSuccessors();
 			NumSuccessors = (pSuccessors != null) ? pSuccessors.length : 0;
 			//
@@ -438,7 +404,7 @@ public final class AStarPathFinder extends PathFinder
 	{
 		if (destination == null)
 			return;
-		bestPath = new LinkedList();
+		bestPath = new LinkedList<>();
 		do
 		{
 			bestPath.addFirst(destination);
@@ -448,10 +414,10 @@ public final class AStarPathFinder extends PathFinder
 
 	private AStarPathNode getBestNode()
 	{
-		if (open.size() == 0)
+		if (open.isEmpty())
 			return null;
-		AStarPathNode best = (AStarPathNode) open.removeFirst();
-		closed.add((Comparable) best);
+		AStarPathNode best = open.remove();
+		closed.add(best);
 		return best;
 	}
 }

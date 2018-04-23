@@ -128,6 +128,7 @@ public class JPathFinderFrame extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					gridPanel.generateRandomFill();
+					repaint();
 				}
 			};
 		JMenuItem mnuGraphGenerateRandom = new JMenuItem(actGraphGenerateRandom);

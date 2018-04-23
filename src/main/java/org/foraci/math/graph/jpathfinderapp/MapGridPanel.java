@@ -116,15 +116,10 @@ public class MapGridPanel extends JPanel
 		{
 			for (int i = 0; i < NUM_GRID_CELLS_X; i++)
 			{
-				/*
-				 * grid[j][i] = (Math.random() <0.5)?
-				 * ((int)(Math.random()*(NUM_WEIGHT_LEVELS-1))+1) :
-				 * Integer.MAX_VALUE;
-				 */
-				grid[j][i] = (Math.random() < 0.55) ? 1 : Integer.MAX_VALUE; //NUM_WEIGHT_LEVELS-1;
 				gridIds[j][i] = index++;
 			}
 		}
+		generateRandomFill();
 		//add window component listener
 		addComponentListener(new ComponentAdapter()
 			{
@@ -186,12 +181,19 @@ public class MapGridPanel extends JPanel
 		{
 			for (int i = 0; i < NUM_GRID_CELLS_X; i++)
 			{
-				/*
-				 * grid[j][i] = (Math.random() <0.5)?
-				 * ((int)(Math.random()*(NUM_WEIGHT_LEVELS-1))+1) :
-				 * Integer.MAX_VALUE;
-				 */
-				grid[j][i] = (Math.random() < 0.55) ? 1 : Integer.MAX_VALUE; //NUM_WEIGHT_LEVELS-1;
+				if ((startpos.getX() == i && startpos.getY() == j)
+						|| (destpos.getX() == i && destpos.getY() == j)) {
+					grid[j][i] = 1;
+					continue;
+				}
+				final double p;
+				if (fastDistance(startpos.x - i, startpos.y - j) < 5
+					|| fastDistance(destpos.x - i, destpos.y - j) < 5) {
+					p = 1;
+				} else {
+					p = 0.55;
+				}
+				grid[j][i] = (Math.random() < p) ? 1 : Integer.MAX_VALUE; //NUM_WEIGHT_LEVELS-1;
 			}
 		}
 		mbi = null;

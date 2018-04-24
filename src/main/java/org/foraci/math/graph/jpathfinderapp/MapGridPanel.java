@@ -65,9 +65,9 @@ public class MapGridPanel extends JPanel
 		};
 
 	/** package private states for current mode of MapGridPanel */
-	static final int SW_NONE = 0, SW_START = 1, SW_DEST = 2;
+	public enum State { SW_NONE , SW_START, SW_DEST };
 
-	private static final int NUM_GRID_CELLS_X = 30, NUM_GRID_CELLS_Y = 30;
+	private static final int NUM_GRID_CELLS_X = 50, NUM_GRID_CELLS_Y = 50;
 	private static final int NUM_WEIGHT_LEVELS = 5;
 	private static final Color BLOCKED_COLOR = Color.RED;
 	private static final Color[] WEIGHT_COLORS;
@@ -87,7 +87,7 @@ public class MapGridPanel extends JPanel
 
 	private int[][] grid, gridIds;
 	private LinkedList path = null;
-	private int wayPoint;
+	private State wayPoint;
 	private Image imgStart, imgDest;
 	private Point startpos, destpos;
 	private BufferedImage mbi = null;
@@ -145,7 +145,7 @@ public class MapGridPanel extends JPanel
 					if (cy < 0 || cy >= NUM_GRID_CELLS_Y)
 						return;
 					//
-					if (wayPoint == SW_NONE)
+					if (wayPoint == State.SW_NONE)
 					{
 						if (e.getButton() == MouseEvent.BUTTON3)
 							grid[cy][cx] = (grid[cy][cx] == Integer.MAX_VALUE) ? 1
@@ -160,15 +160,15 @@ public class MapGridPanel extends JPanel
 								++grid[cy][cx];
 						}
 					}
-					else if (wayPoint == SW_START)
+					else if (wayPoint == State.SW_START)
 					{
 						startpos = new Point(cx, cy);
 					}
-					else if (wayPoint == SW_DEST)
+					else if (wayPoint == State.SW_DEST)
 					{
 						destpos = new Point(cx, cy);
 					}
-					wayPoint = SW_NONE;
+					wayPoint = State.SW_NONE;
 					mbi = null;
 					MapGridPanel.this.repaint();
 				}
@@ -273,7 +273,7 @@ public class MapGridPanel extends JPanel
 		return true;
 	}
 
-	void setWayPoint(int state)
+	void setWayPoint(State state)
 	{
 		wayPoint = state;
 	}

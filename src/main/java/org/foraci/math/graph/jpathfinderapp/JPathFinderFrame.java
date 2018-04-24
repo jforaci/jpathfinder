@@ -22,11 +22,11 @@ import org.foraci.math.graph.pathfinder.NoPathFoundException;
 public class JPathFinderFrame extends JFrame
 {
 	private static final int WIN_WIDTH = 800, WIN_HEIGHT = 600;
-	private static final int CS_FIND_PATH = 0, CS_CLEAR_PATH = 1;
+	private enum CommandState { CS_FIND_PATH, CS_CLEAR_PATH };
 
 	private JButton cmdRun, cmdSetStart, cmdSetDest;
 	private JLabel lblResult;
-	private int cmdState;
+	private CommandState cmdState;
 	private MapGridPanel gridPanel;
 	private JPathFinderPanel panel;
 	private Container contentPane;
@@ -44,22 +44,22 @@ public class JPathFinderFrame extends JFrame
 		panel.setLayout(new GridLayout(1, 4, 8, 8));
 		contentPane.add(panel, BorderLayout.SOUTH);
 		//set state of app
-		cmdState = CS_FIND_PATH;
-		gridPanel.setWayPoint(MapGridPanel.SW_NONE);
+		cmdState = CommandState.CS_FIND_PATH;
+		gridPanel.setWayPoint(MapGridPanel.State.SW_NONE);
 		//add cmd button and register events
 		cmdRun = new JButton("Find Path");
 		cmdRun.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					if (cmdState == CS_FIND_PATH)
+					if (cmdState == CommandState.CS_FIND_PATH)
 					{
 						try
 						{
 							long time = System.currentTimeMillis();
 							float cost = gridPanel.findPath();
 							time = (System.currentTimeMillis() - time);
-							cmdState = CS_CLEAR_PATH;
+							cmdState = CommandState.CS_CLEAR_PATH;
 							cmdRun.setText("Reset");
 							lblResult.setText("Cost=" + cost + " Time=" + time
 								+ " ms");
@@ -73,7 +73,7 @@ public class JPathFinderFrame extends JFrame
 					}
 					else
 					{
-						cmdState = CS_FIND_PATH;
+						cmdState = CommandState.CS_FIND_PATH;
 						cmdRun.setText("Find Path");
 						gridPanel.resetPath();
 						lblResult.setText("");
@@ -86,7 +86,7 @@ public class JPathFinderFrame extends JFrame
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					gridPanel.setWayPoint(MapGridPanel.SW_START);
+					gridPanel.setWayPoint(MapGridPanel.State.SW_START);
 				}
 			});
 		cmdSetDest = new JButton("Set Dest");
@@ -94,7 +94,7 @@ public class JPathFinderFrame extends JFrame
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					gridPanel.setWayPoint(MapGridPanel.SW_DEST);
+					gridPanel.setWayPoint(MapGridPanel.State.SW_DEST);
 				}
 			});
 		//label

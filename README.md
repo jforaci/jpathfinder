@@ -1,4 +1,4 @@
-# Intro
+## Intro
 JPathfinder uses the [A* (or A Star)](https://en.wikipedia.org/wiki/A*_search_algorithm) heuristic to implement an arbitrary pathfinding library in Java with demo. JPathFinder isn't specific to A*, but has that algorithm as the implemenentation.
 
 Given a graph consisting of nodes (`PathNode`), you create a `PathFinder` to find the path with the least "cost" to get from any given node to any other given node. The cost is returned as a floating-point number and calculated by a given `PathCostEstimator`.

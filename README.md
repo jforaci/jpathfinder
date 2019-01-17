@@ -5,6 +5,8 @@ Given a graph consisting of nodes (`PathNode`), you create a `PathFinder` to fin
 
 The A* implementation is called `AStarPathFinder`.
 
+![JPathFinder Demo](https://i.ibb.co/GFgqCTV/jpathfinder-demo.png)
+
 ## Quick start
 Creating a graph from a regular, two-dimensional grid of weights is a common use case so there is a builder for `AStarPathFinder` that creates the graph for you based on an array of integer weights:
 ```Java

@@ -3,7 +3,7 @@ JPathfinder uses the [A* (or A Star)](https://en.wikipedia.org/wiki/A*_search_al
 
 Given a graph consisting of nodes (`PathNode`), you create a `PathFinder` to find the path with the least "cost" to get from any given node to any other given node. The cost is returned as a floating-point number and calculated by a given `PathCostEstimator`.
 
-The A* implementation is called `AStarPathFinder`.
+The A* implementation is called `AStarPathFinder`. Here you can see the demo application showing a randomly generated map, and the shortest path being overlayed, with its cost and the time to compute it.
 
 ![JPathFinder Demo](https://i.ibb.co/GFgqCTV/jpathfinder-demo.png)
 

@@ -5,7 +5,7 @@ Given a graph consisting of nodes (`PathNode`), you create a `PathFinder` to fin
 
 The A* implementation is called `AStarPathFinder`. Here you can see the demo application showing a randomly generated map, and the shortest path being overlayed, with its cost and the time to compute it.
 
-![JPathFinder Demo](https://i.ibb.co/GFgqCTV/jpathfinder-demo.png)
+![JPathFinder Demo](https://user-images.githubusercontent.com/38170229/192827030-4549e797-e282-4ecb-b8ca-5ea93c26707d.png)
 
 ## Quick start
 Creating a graph from a regular, two-dimensional grid of weights is a common use case so there is a builder for `AStarPathFinder` that creates the graph for you based on an array of integer weights:
